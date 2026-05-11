@@ -432,7 +432,8 @@
       <section class="card auth-card" id="authScreen">
         <h2>Acessar sistema</h2>
         <p class="help">
-          Entre com e-mail e senha para salvar e ver apenas os seus fretes.
+          Entre com e-mail e senha. O cadastro de usuários é liberado
+          manualmente pelo administrador.
         </p>
         <div class="fields">
           <div>
@@ -456,9 +457,6 @@
         </div>
         <div class="actions">
           <button class="btn-primary" onclick="loginUser()">Entrar</button>
-          <button class="btn-secondary" onclick="registerUser()">
-            Criar cadastro
-          </button>
         </div>
         <div class="alert hidden" id="authAlert"></div>
         <div class="success hidden" id="authSuccess"></div>
@@ -886,33 +884,6 @@
 
         hideAlert("authAlert");
         showSuccess("authSuccess", "Login realizado com sucesso.");
-      }
-
-      async function registerUser() {
-        const credentials = getAuthCredentials();
-        if (!credentials) return;
-
-        const { data, error } = await supabaseClient.auth.signUp(credentials);
-
-        if (error) {
-          showAlert(
-            "authAlert",
-            "Erro ao criar cadastro. Verifique se o e-mail já existe ou se a senha é válida.",
-          );
-          console.error(error);
-          return;
-        }
-
-        hideAlert("authAlert");
-
-        if (data.session) {
-          showSuccess("authSuccess", "Cadastro criado e login realizado.");
-        } else {
-          showSuccess(
-            "authSuccess",
-            "Cadastro criado. Confira seu e-mail para confirmar a conta, se o Supabase pedir confirmação.",
-          );
-        }
       }
 
       async function logoutUser() {
