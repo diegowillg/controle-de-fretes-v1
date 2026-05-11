@@ -457,9 +457,44 @@
         </div>
         <div class="actions">
           <button class="btn-primary" onclick="loginUser()">Entrar</button>
+          <button class="btn-secondary" onclick="forgotPassword()">
+            Esqueci minha senha
+          </button>
         </div>
         <div class="alert hidden" id="authAlert"></div>
         <div class="success hidden" id="authSuccess"></div>
+      </section>
+
+      <section class="card auth-card hidden" id="passwordRecoveryScreen">
+        <h2>Criar nova senha</h2>
+        <p class="help">Digite uma nova senha para sua conta.</p>
+        <div class="fields">
+          <div>
+            <label for="newPassword">Nova senha</label>
+            <input
+              type="password"
+              id="newPassword"
+              placeholder="Mínimo de 6 caracteres"
+              autocomplete="new-password"
+            />
+          </div>
+          <div>
+            <label for="confirmNewPassword">Confirmar nova senha</label>
+            <input
+              type="password"
+              id="confirmNewPassword"
+              placeholder="Repita a nova senha"
+              autocomplete="new-password"
+            />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-primary" onclick="updateRecoveredPassword()">
+            Salvar nova senha
+          </button>
+        </div>
+        <div class="alert hidden" id="recoveryAlert"></div>
+        <div class="success hidden" id="recoverySuccess"></div>
       </section>
 
       <div class="grid hidden" id="appMain">
@@ -690,6 +725,7 @@
 
       let currentUser = null;
       let savedTrips = [];
+      let isPasswordRecovery = false;
 
       let currentTrip = {
         id: null,
@@ -818,7 +854,14 @@
         currentUser = data.session?.user || null;
         updateAuthUi();
 
-        supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+          if (event === "PASSWORD_RECOVERY") {
+            isPasswordRecovery = true;
+            currentUser = session?.user || null;
+            updateAuthUi();
+            return;
+          }
+
           currentUser = session?.user || null;
           updateAuthUi();
           if (currentUser) {
@@ -829,9 +872,22 @@
 
       function updateAuthUi() {
         const authScreen = document.getElementById("authScreen");
+        const recoveryScreen = document.getElementById(
+          "passwordRecoveryScreen",
+        );
         const appMain = document.getElementById("appMain");
         const userBar = document.getElementById("userBar");
         const userEmail = document.getElementById("userEmail");
+
+        if (isPasswordRecovery) {
+          authScreen.classList.add("hidden");
+          recoveryScreen.classList.remove("hidden");
+          appMain.classList.add("hidden");
+          userBar.classList.add("hidden");
+          return;
+        }
+
+        recoveryScreen.classList.add("hidden");
 
         if (currentUser) {
           authScreen.classList.add("hidden");
@@ -884,6 +940,114 @@
 
         hideAlert("authAlert");
         showSuccess("authSuccess", "Login realizado com sucesso.");
+      }
+
+      async function forgotPassword() {
+        hideAlert("authAlert");
+        hideSuccess("authSuccess");
+
+        const email = document.getElementById("authEmail").value.trim();
+
+        if (!email) {
+          showAlert(
+            "authAlert",
+            "Digite o e-mail cadastrado para recuperar a senha.",
+          );
+          return;
+        }
+
+        const { data: exists, error: existsError } = await supabaseClient.rpc(
+          "email_usuario_existe",
+          { email_input: email },
+        );
+
+        if (existsError) {
+          console.error(existsError);
+          showAlert(
+            "authAlert",
+            "Erro ao verificar o e-mail. Rode a função SQL de recuperação no Supabase.",
+          );
+          return;
+        }
+
+        if (!exists) {
+          showAlert("authAlert", "Este e-mail não está cadastrado no sistema.");
+          return;
+        }
+
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(
+          email,
+          {
+            redirectTo: window.location.href.split("#")[0],
+          },
+        );
+
+        if (error) {
+          console.error(error);
+          showAlert(
+            "authAlert",
+            "Erro ao enviar o link de redefinição de senha.",
+          );
+          return;
+        }
+
+        showSuccess(
+          "authSuccess",
+          "Link de redefinição enviado para o e-mail cadastrado.",
+        );
+      }
+
+      async function updateRecoveredPassword() {
+        hideAlert("recoveryAlert");
+        hideSuccess("recoverySuccess");
+
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmNewPassword =
+          document.getElementById("confirmNewPassword").value;
+
+        if (!newPassword || !confirmNewPassword) {
+          showAlert("recoveryAlert", "Preencha e confirme a nova senha.");
+          return;
+        }
+
+        if (newPassword.length < 6) {
+          showAlert(
+            "recoveryAlert",
+            "A nova senha precisa ter pelo menos 6 caracteres.",
+          );
+          return;
+        }
+
+        if (newPassword !== confirmNewPassword) {
+          showAlert("recoveryAlert", "As senhas não conferem.");
+          return;
+        }
+
+        const { error } = await supabaseClient.auth.updateUser({
+          password: newPassword,
+        });
+
+        if (error) {
+          console.error(error);
+          showAlert(
+            "recoveryAlert",
+            "Erro ao atualizar a senha. Abra novamente o link enviado por e-mail.",
+          );
+          return;
+        }
+
+        showSuccess("recoverySuccess", "Senha alterada com sucesso.");
+        isPasswordRecovery = false;
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmNewPassword").value = "";
+        await supabaseClient.auth.signOut();
+        isPasswordRecovery = false;
+        currentUser = null;
+        updateAuthUi();
+        showSuccess(
+          "authSuccess",
+          "Senha alterada. Entre novamente com a nova senha.",
+        );
       }
 
       async function logoutUser() {
