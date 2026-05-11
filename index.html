@@ -846,12 +846,22 @@
       }
 
       async function checkAuth() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isResetPasswordUrl =
+          urlParams.has("reset-password") ||
+          window.location.hash.includes("type=recovery");
+
         const { data, error } = await supabaseClient.auth.getSession();
         if (error) {
           console.error(error);
         }
 
         currentUser = data.session?.user || null;
+
+        if (isResetPasswordUrl && currentUser) {
+          isPasswordRecovery = true;
+        }
+
         updateAuthUi();
 
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
@@ -978,7 +988,10 @@
         const { error } = await supabaseClient.auth.resetPasswordForEmail(
           email,
           {
-            redirectTo: window.location.href.split("#")[0],
+            redirectTo:
+              window.location.origin +
+              window.location.pathname +
+              "?reset-password=true",
           },
         );
 
@@ -1040,6 +1053,11 @@
         isPasswordRecovery = false;
         document.getElementById("newPassword").value = "";
         document.getElementById("confirmNewPassword").value = "";
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.origin + window.location.pathname,
+        );
         await supabaseClient.auth.signOut();
         isPasswordRecovery = false;
         currentUser = null;
