@@ -67,6 +67,11 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
       }
 
+      .auth-card {
+        max-width: 460px;
+        margin: 24px auto;
+      }
+
       .card h2 {
         margin: 0 0 12px;
         font-size: 19px;
@@ -363,6 +368,29 @@
         font-weight: 700;
       }
 
+      .user-bar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 13px;
+      }
+
+      .user-email {
+        background: rgba(255, 255, 255, 0.14);
+        padding: 7px 10px;
+        border-radius: 999px;
+      }
+
+      .logout-btn {
+        height: 32px;
+        background: rgba(255, 255, 255, 0.18);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+      }
+
       footer {
         text-align: center;
         color: var(--muted);
@@ -392,11 +420,51 @@
   <body>
     <header>
       <h1>Controle de Fretes</h1>
-      <span class="status-online">Salvamento online via Supabase OK!</span>
+      <p>Viagem única, rotas separadas, gastos juntos e divisão meio a meio</p>
+      <span class="status-online">Login e salvamento online via Supabase</span>
+      <div class="user-bar hidden" id="userBar">
+        <span class="user-email" id="userEmail"></span>
+        <button class="logout-btn" onclick="logoutUser()">Sair</button>
+      </div>
     </header>
 
     <main>
-      <div class="grid">
+      <section class="card auth-card" id="authScreen">
+        <h2>Acessar sistema</h2>
+        <p class="help">
+          Entre com e-mail e senha para salvar e ver apenas os seus fretes.
+        </p>
+        <div class="fields">
+          <div>
+            <label for="authEmail">E-mail</label>
+            <input
+              type="email"
+              id="authEmail"
+              placeholder="seuemail@email.com"
+              autocomplete="email"
+            />
+          </div>
+          <div>
+            <label for="authPassword">Senha</label>
+            <input
+              type="password"
+              id="authPassword"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+            />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-primary" onclick="loginUser()">Entrar</button>
+          <button class="btn-secondary" onclick="registerUser()">
+            Criar cadastro
+          </button>
+        </div>
+        <div class="alert hidden" id="authAlert"></div>
+        <div class="success hidden" id="authSuccess"></div>
+      </section>
+
+      <div class="grid hidden" id="appMain">
         <section class="card">
           <div class="steps">
             <div class="step active" id="step1">1. Viagem</div>
@@ -614,12 +682,15 @@
       </div>
     </main>
 
+    <footer>Sistema simples para controle interno de fretes.</footer>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       const SUPABASE_URL = "https://isysdxcppvajnjlzfpsh.supabase.co";
       const SUPABASE_KEY = "sb_publishable_L4XrcmXphpCRZaeTA-Kkdw_5vEGvV_7";
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+      let currentUser = null;
       let savedTrips = [];
 
       let currentTrip = {
@@ -738,6 +809,118 @@
         const el = document.getElementById(id);
         el.textContent = "";
         el.classList.add("hidden");
+      }
+
+      async function checkAuth() {
+        const { data, error } = await supabaseClient.auth.getSession();
+        if (error) {
+          console.error(error);
+        }
+
+        currentUser = data.session?.user || null;
+        updateAuthUi();
+
+        supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+          currentUser = session?.user || null;
+          updateAuthUi();
+          if (currentUser) {
+            await loadTripsFromSupabase();
+          }
+        });
+      }
+
+      function updateAuthUi() {
+        const authScreen = document.getElementById("authScreen");
+        const appMain = document.getElementById("appMain");
+        const userBar = document.getElementById("userBar");
+        const userEmail = document.getElementById("userEmail");
+
+        if (currentUser) {
+          authScreen.classList.add("hidden");
+          appMain.classList.remove("hidden");
+          userBar.classList.remove("hidden");
+          userEmail.textContent = currentUser.email || "Usuário logado";
+        } else {
+          authScreen.classList.remove("hidden");
+          appMain.classList.add("hidden");
+          userBar.classList.add("hidden");
+          userEmail.textContent = "";
+          savedTrips = [];
+        }
+      }
+
+      function getAuthCredentials() {
+        const email = document.getElementById("authEmail").value.trim();
+        const password = document.getElementById("authPassword").value;
+
+        if (!email || !password) {
+          showAlert("authAlert", "Informe e-mail e senha.");
+          return null;
+        }
+
+        if (password.length < 6) {
+          showAlert(
+            "authAlert",
+            "A senha precisa ter pelo menos 6 caracteres.",
+          );
+          return null;
+        }
+
+        hideAlert("authAlert");
+        hideSuccess("authSuccess");
+        return { email, password };
+      }
+
+      async function loginUser() {
+        const credentials = getAuthCredentials();
+        if (!credentials) return;
+
+        const { error } =
+          await supabaseClient.auth.signInWithPassword(credentials);
+
+        if (error) {
+          showAlert("authAlert", "Erro ao entrar. Confira e-mail e senha.");
+          console.error(error);
+          return;
+        }
+
+        hideAlert("authAlert");
+        showSuccess("authSuccess", "Login realizado com sucesso.");
+      }
+
+      async function registerUser() {
+        const credentials = getAuthCredentials();
+        if (!credentials) return;
+
+        const { data, error } = await supabaseClient.auth.signUp(credentials);
+
+        if (error) {
+          showAlert(
+            "authAlert",
+            "Erro ao criar cadastro. Verifique se o e-mail já existe ou se a senha é válida.",
+          );
+          console.error(error);
+          return;
+        }
+
+        hideAlert("authAlert");
+
+        if (data.session) {
+          showSuccess("authSuccess", "Cadastro criado e login realizado.");
+        } else {
+          showSuccess(
+            "authSuccess",
+            "Cadastro criado. Confira seu e-mail para confirmar a conta, se o Supabase pedir confirmação.",
+          );
+        }
+      }
+
+      async function logoutUser() {
+        await supabaseClient.auth.signOut();
+        currentUser = null;
+        savedTrips = [];
+        resetForm();
+        updateAuthUi();
       }
 
       function goToNotes() {
@@ -1064,6 +1247,8 @@
       }
 
       async function loadTripsFromSupabase() {
+        if (!currentUser) return;
+
         const list = document.getElementById("tripList");
         list.innerHTML =
           '<div class="empty">Carregando viagens do Supabase...</div>';
@@ -1071,13 +1256,14 @@
         const { data, error } = await supabaseClient
           .from("viagens")
           .select("*, notas_fiscais(*)")
+          .eq("usuario_id", currentUser.id)
           .order("data_viagem", { ascending: false })
           .order("id", { ascending: false });
 
         if (error) {
           console.error(error);
           list.innerHTML =
-            '<div class="empty">Erro ao carregar dados do Supabase. Confira as tabelas e permissões.</div>';
+            '<div class="empty">Erro ao carregar dados. Confira as tabelas, usuario_id e permissões RLS.</div>';
           return;
         }
 
@@ -1089,6 +1275,11 @@
         hideAlert("saveAlert");
         hideSuccess("saveSuccess");
 
+        if (!currentUser) {
+          showAlert("saveAlert", "Você precisa estar logado para salvar.");
+          return;
+        }
+
         const saveButton = document.getElementById("saveButton");
         saveButton.disabled = true;
         saveButton.textContent = "Salvando...";
@@ -1099,6 +1290,7 @@
         const { data: viagemCriada, error: erroViagem } = await supabaseClient
           .from("viagens")
           .insert({
+            usuario_id: currentUser.id,
             data_viagem: currentTrip.data,
             cidade_saida: currentTrip.cidadeSaida,
             destino_final: currentTrip.cidadeDestinoFinal,
@@ -1117,7 +1309,7 @@
           console.error(erroViagem);
           showAlert(
             "saveAlert",
-            "Erro ao salvar a viagem no Supabase. Confira as permissões da tabela viagens.",
+            "Erro ao salvar a viagem. Confira se a coluna usuario_id e as políticas RLS foram criadas.",
           );
           saveButton.disabled = false;
           saveButton.textContent = "Salvar viagem online";
@@ -1182,6 +1374,8 @@
       }
 
       async function deleteTrip(id) {
+        if (!currentUser) return;
+
         const confirmDelete = confirm(
           "Deseja remover esta viagem salva? As notas e rotas também serão removidas.",
         );
@@ -1190,7 +1384,8 @@
         const { error } = await supabaseClient
           .from("viagens")
           .delete()
-          .eq("id", id);
+          .eq("id", id)
+          .eq("usuario_id", currentUser.id);
 
         if (error) {
           console.error(error);
@@ -1365,7 +1560,6 @@
           <section class="trip-section">
             <h2>${index + 1}. ${trip.cidadeSaida} → ${trip.cidadeDestinoFinal}</h2>
             <p class="muted">Data: ${formatDateBR(trip.data)}</p>
-
             <div class="summary-grid">
               <div><span>Total NFs</span><strong>${formatMoney(totals.totalNfs)}</strong></div>
               <div><span>Total fretes</span><strong>${formatMoney(totals.totalFretes)}</strong></div>
@@ -1375,30 +1569,17 @@
               <div><span>Líquido</span><strong>${formatMoney(totals.valorLiquido)}</strong></div>
               <div><span>Parte de cada</span><strong>${formatMoney(totals.parteCada)}</strong></div>
             </div>
-
             <h3>Fretes separados por rota</h3>
             <table>
               <thead>
-                <tr>
-                  <th>Rota/Cidade</th>
-                  <th>Notas</th>
-                  <th>Total NFs</th>
-                  <th>Total fretes</th>
-                </tr>
+                <tr><th>Rota/Cidade</th><th>Notas</th><th>Total NFs</th><th>Total fretes</th></tr>
               </thead>
               <tbody>${routeRows}</tbody>
             </table>
-
             <h3>Notas fiscais</h3>
             <table>
               <thead>
-                <tr>
-                  <th>Rota</th>
-                  <th>Remetente</th>
-                  <th>NF</th>
-                  <th>Valor NF</th>
-                  <th>Frete</th>
-                </tr>
+                <tr><th>Rota</th><th>Remetente</th><th>NF</th><th>Valor NF</th><th>Frete</th></tr>
               </thead>
               <tbody>${noteRows}</tbody>
             </table>
@@ -1415,96 +1596,23 @@
           <title>Relatório de Fretes</title>
           <style>
             * { box-sizing: border-box; }
-            body {
-              font-family: Arial, Helvetica, sans-serif;
-              color: #111827;
-              margin: 24px;
-              background: #ffffff;
-            }
-            .header {
-              border-bottom: 3px solid #1f4f46;
-              padding-bottom: 14px;
-              margin-bottom: 18px;
-            }
-            h1 {
-              margin: 0;
-              color: #1f4f46;
-              font-size: 24px;
-            }
-            h2 {
-              color: #1f4f46;
-              font-size: 18px;
-              margin: 24px 0 4px;
-            }
-            h3 {
-              color: #374151;
-              font-size: 14px;
-              margin: 18px 0 8px;
-            }
-            .muted {
-              color: #6b7280;
-              font-size: 12px;
-              margin: 4px 0 12px;
-            }
-            .summary-grid {
-              display: grid;
-              grid-template-columns: repeat(4, 1fr);
-              gap: 8px;
-              margin: 12px 0;
-            }
-            .summary-grid div {
-              border: 1px solid #d1d5db;
-              border-radius: 8px;
-              padding: 10px;
-              background: #f9fafb;
-            }
-            .summary-grid span {
-              display: block;
-              color: #6b7280;
-              font-size: 11px;
-              margin-bottom: 4px;
-            }
-            .summary-grid strong {
-              font-size: 14px;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-bottom: 10px;
-              font-size: 12px;
-            }
-            th, td {
-              border: 1px solid #d1d5db;
-              padding: 7px;
-              text-align: left;
-            }
-            th {
-              background: #eef2f7;
-              color: #374151;
-            }
-            .trip-section {
-              page-break-inside: avoid;
-              margin-bottom: 22px;
-            }
-            .total-box {
-              border: 2px solid #1f4f46;
-              border-radius: 10px;
-              padding: 12px;
-              margin: 16px 0 22px;
-              background: #f9fafb;
-            }
-            .footer {
-              color: #6b7280;
-              font-size: 11px;
-              margin-top: 24px;
-              border-top: 1px solid #d1d5db;
-              padding-top: 10px;
-            }
-            @media print {
-              body { margin: 12mm; }
-              button { display: none; }
-              .trip-section { page-break-inside: avoid; }
-            }
+            body { font-family: Arial, Helvetica, sans-serif; color: #111827; margin: 24px; background: #ffffff; }
+            .header { border-bottom: 3px solid #1f4f46; padding-bottom: 14px; margin-bottom: 18px; }
+            h1 { margin: 0; color: #1f4f46; font-size: 24px; }
+            h2 { color: #1f4f46; font-size: 18px; margin: 24px 0 4px; }
+            h3 { color: #374151; font-size: 14px; margin: 18px 0 8px; }
+            .muted { color: #6b7280; font-size: 12px; margin: 4px 0 12px; }
+            .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+            .summary-grid div { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; background: #f9fafb; }
+            .summary-grid span { display: block; color: #6b7280; font-size: 11px; margin-bottom: 4px; }
+            .summary-grid strong { font-size: 14px; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px; }
+            th, td { border: 1px solid #d1d5db; padding: 7px; text-align: left; }
+            th { background: #eef2f7; color: #374151; }
+            .trip-section { page-break-inside: avoid; margin-bottom: 22px; }
+            .total-box { border: 2px solid #1f4f46; border-radius: 10px; padding: 12px; margin: 16px 0 22px; background: #f9fafb; }
+            .footer { color: #6b7280; font-size: 11px; margin-top: 24px; border-top: 1px solid #d1d5db; padding-top: 10px; }
+            @media print { body { margin: 12mm; } button { display: none; } .trip-section { page-break-inside: avoid; } }
           </style>
         </head>
         <body>
@@ -1513,7 +1621,6 @@
             <p class="muted">Período: ${formatDateBR(startDate)} até ${formatDateBR(endDate)}</p>
             <p class="muted">Gerado em: ${formatDateBR(today())}</p>
           </div>
-
           <div class="total-box">
             <h2 style="margin-top:0;">Resumo geral do período</h2>
             <div class="summary-grid">
@@ -1527,18 +1634,9 @@
               <div><span>Parte de cada</span><strong>${formatMoney(grandTotals.parteCada)}</strong></div>
             </div>
           </div>
-
           ${tripsHtml}
-
-          <div class="footer">
-            Relatório gerado pelo sistema de controle de fretes.
-          </div>
-
-          <script>
-            window.onload = function() {
-              window.print();
-            };
-          <\/script>
+          <div class="footer">Relatório gerado pelo sistema de controle de fretes.</div>
+          <script>window.onload = function() { window.print(); };<\/script>
         </body>
         </html>
       `;
@@ -1604,7 +1702,10 @@
         document.getElementById("dataViagem").value = today();
         currentTrip.data = today();
         renderNotes();
-        await loadTripsFromSupabase();
+        await checkAuth();
+        if (currentUser) {
+          await loadTripsFromSupabase();
+        }
       });
     </script>
   </body>
