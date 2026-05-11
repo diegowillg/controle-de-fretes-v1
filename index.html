@@ -858,7 +858,7 @@
 
         currentUser = data.session?.user || null;
 
-        if (isResetPasswordUrl && currentUser) {
+        if (isResetPasswordUrl) {
           isPasswordRecovery = true;
         }
 
@@ -999,7 +999,7 @@
           console.error(error);
           showAlert(
             "authAlert",
-            "Erro ao enviar o link de redefinição de senha.",
+            `Erro ao enviar o link: ${error.message || "verifique as configurações de autenticação no Supabase."}`,
           );
           return;
         }
@@ -1017,6 +1017,16 @@
         const newPassword = document.getElementById("newPassword").value;
         const confirmNewPassword =
           document.getElementById("confirmNewPassword").value;
+
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+
+        if (!sessionData.session) {
+          showAlert(
+            "recoveryAlert",
+            "Sessão de recuperação não encontrada. Abra novamente o link recebido por e-mail.",
+          );
+          return;
+        }
 
         if (!newPassword || !confirmNewPassword) {
           showAlert("recoveryAlert", "Preencha e confirme a nova senha.");
