@@ -3,425 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Controle de Fretes</title>
+    <title>Controle de Fretes e Contabilidade</title>
     <link rel="icon" type="image/png" href="img/box.png" />
-    <style>
-      :root {
-        --bg: #f4f6f8;
-        --card: #ffffff;
-        --text: #1f2937;
-        --muted: #6b7280;
-        --primary: #1f4f46;
-        --primary-dark: #173d36;
-        --accent: #e0a800;
-        --danger: #b91c1c;
-        --border: #d1d5db;
-        --soft: #eef2f7;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-      }
-
-      header {
-        background: var(--primary);
-        color: white;
-        padding: 22px 16px;
-        text-align: center;
-      }
-
-      header h1 {
-        margin: 0;
-        font-size: 24px;
-      }
-
-      header p {
-        margin: 6px 0 0;
-        font-size: 14px;
-        opacity: 0.9;
-      }
-
-      main {
-        max-width: 1080px;
-        margin: 0 auto;
-        padding: 18px;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 18px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-      }
-
-      .auth-card {
-        max-width: 460px;
-        margin: 24px auto;
-      }
-
-      .card h2 {
-        margin: 0 0 12px;
-        font-size: 19px;
-        color: var(--primary);
-      }
-
-      .card h3 {
-        margin: 16px 0 8px;
-        font-size: 16px;
-        color: var(--primary);
-      }
-
-      label {
-        display: block;
-        font-size: 13px;
-        font-weight: 700;
-        margin-bottom: 5px;
-        color: #374151;
-      }
-
-      input {
-        width: 100%;
-        height: 42px;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 0 12px;
-        font-size: 15px;
-        outline: none;
-        background: #fff;
-      }
-
-      input:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(31, 79, 70, 0.12);
-      }
-
-      .fields {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-
-      .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 14px;
-      }
-
-      button {
-        border: none;
-        border-radius: 10px;
-        height: 42px;
-        padding: 0 16px;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 0.2s;
-      }
-
-      button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-
-      .btn-primary {
-        background: var(--primary);
-        color: white;
-      }
-
-      .btn-primary:hover {
-        background: var(--primary-dark);
-      }
-
-      .btn-secondary {
-        background: var(--soft);
-        color: var(--text);
-        border: 1px solid var(--border);
-      }
-
-      .btn-secondary:hover {
-        background: #e5e7eb;
-      }
-
-      .btn-danger {
-        background: #fee2e2;
-        color: var(--danger);
-        border: 1px solid #fecaca;
-      }
-
-      .btn-danger:hover {
-        background: #fecaca;
-      }
-
-      .steps {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-
-      .step {
-        background: #e5e7eb;
-        color: #4b5563;
-        padding: 10px 8px;
-        border-radius: 999px;
-        text-align: center;
-        font-size: 12px;
-        font-weight: 700;
-      }
-
-      .step.active {
-        background: var(--primary);
-        color: white;
-      }
-
-      .hidden {
-        display: none !important;
-      }
-
-      .note-list,
-      .route-list,
-      .trip-list {
-        display: grid;
-        gap: 10px;
-        margin-top: 14px;
-      }
-
-      .note-item,
-      .route-item,
-      .trip-item {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 12px;
-      }
-
-      .note-item {
-        background: #f9fafb;
-      }
-
-      .note-item-top,
-      .trip-head {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        align-items: flex-start;
-        flex-wrap: wrap;
-      }
-
-      .note-title,
-      .route-title,
-      .trip-route {
-        font-weight: 800;
-        color: var(--primary);
-      }
-
-      .note-details,
-      .route-details,
-      .trip-date {
-        color: var(--muted);
-        font-size: 13px;
-        margin-top: 5px;
-        line-height: 1.5;
-      }
-
-      .summary {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-top: 12px;
-      }
-
-      .summary-box {
-        background: #f9fafb;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 14px;
-      }
-
-      .summary-box span {
-        display: block;
-        color: var(--muted);
-        font-size: 13px;
-        margin-bottom: 5px;
-      }
-
-      .summary-box strong {
-        display: block;
-        font-size: 20px;
-        color: var(--text);
-      }
-
-      .highlight {
-        border-color: var(--accent);
-        background: #fffbeb;
-      }
-
-      .highlight strong {
-        color: #92400e;
-      }
-
-      .route-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 8px;
-        font-size: 13px;
-        overflow: hidden;
-        border-radius: 10px;
-      }
-
-      .route-table th,
-      .route-table td {
-        border: 1px solid var(--border);
-        padding: 8px;
-        text-align: left;
-      }
-
-      .route-table th {
-        background: var(--soft);
-        color: #374151;
-      }
-
-      .trip-values {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        margin-top: 10px;
-        font-size: 13px;
-      }
-
-      .trip-values div {
-        background: #f9fafb;
-        border-radius: 8px;
-        padding: 8px;
-      }
-
-      .empty {
-        color: var(--muted);
-        text-align: center;
-        padding: 20px;
-        background: #f9fafb;
-        border: 1px dashed var(--border);
-        border-radius: 12px;
-      }
-
-      .alert {
-        margin-top: 12px;
-        padding: 12px;
-        border-radius: 10px;
-        background: #fff7ed;
-        color: #9a3412;
-        border: 1px solid #fed7aa;
-        font-size: 14px;
-      }
-
-      .success {
-        margin-top: 12px;
-        padding: 12px;
-        border-radius: 10px;
-        background: #ecfdf5;
-        color: #065f46;
-        border: 1px solid #a7f3d0;
-        font-size: 14px;
-      }
-
-      .help {
-        color: var(--muted);
-        margin-top: -4px;
-        font-size: 14px;
-        line-height: 1.5;
-      }
-
-      .export-box {
-        background: #f9fafb;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 14px;
-        margin-bottom: 16px;
-      }
-
-      .export-box h3 {
-        margin-top: 0;
-      }
-
-      .status-online {
-        display: inline-block;
-        margin-top: 8px;
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: #ecfdf5;
-        color: #065f46;
-        font-size: 12px;
-        font-weight: 700;
-      }
-
-      .user-bar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 10px;
-        font-size: 13px;
-      }
-
-      .user-email {
-        background: rgba(255, 255, 255, 0.14);
-        padding: 7px 10px;
-        border-radius: 999px;
-      }
-
-      .logout-btn {
-        height: 32px;
-        background: rgba(255, 255, 255, 0.18);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-      }
-
-      footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 12px;
-        padding: 22px;
-      }
-
-      @media (min-width: 720px) {
-        .grid {
-          grid-template-columns: 1.2fr 0.8fr;
-        }
-
-        .fields.two {
-          grid-template-columns: repeat(2, 1fr);
-        }
-
-        .fields.three {
-          grid-template-columns: repeat(3, 1fr);
-        }
-
-        .summary {
-          grid-template-columns: repeat(4, 1fr);
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
     <header>
       <h1>Controle de Fretes</h1>
-      <span class="status-online">Login e salvamento online via Supabase</span>
+      <span class="status-online">Login único para fretes e contabilidade</span>
+      <nav class="site-nav hidden" id="siteNav" aria-label="Áreas do sistema">
+        <button
+          type="button"
+          class="tab-btn active"
+          data-tab="fretes"
+          onclick="switchTab('fretes')"
+        >
+          Fretes
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          data-tab="contabilidade"
+          onclick="switchTab('contabilidade')"
+        >
+          Contabilidade
+        </button>
+      </nav>
       <div class="user-bar hidden" id="userBar">
         <span class="user-email" id="userEmail"></span>
         <button class="logout-btn" onclick="logoutUser()">Sair</button>
@@ -432,8 +39,8 @@
       <section class="card auth-card" id="authScreen">
         <h2>Acessar sistema</h2>
         <p class="help">
-          Entre com e-mail e senha. O cadastro de usuários é liberado
-          manualmente pelo administrador.
+          Entre com e-mail e senha para acessar o controle de fretes e a
+          contabilidade. O cadastro é liberado manualmente pelo administrador.
         </p>
         <div class="fields">
           <div>
@@ -497,7 +104,9 @@
         <div class="success hidden" id="recoverySuccess"></div>
       </section>
 
-      <div class="grid hidden" id="appMain">
+      <div class="hidden" id="loggedArea">
+        <div id="tabPanelFretes" class="tab-panel">
+          <div class="grid" id="appMain">
         <section class="card">
           <div class="steps">
             <div class="step active" id="step1">1. Viagem</div>
@@ -653,6 +262,25 @@
 
           <div id="screenSummary" class="hidden">
             <h2>Resumo do acerto</h2>
+            <div class="division-box">
+              <label for="divisaoPor">Dividir o valor líquido entre quantas pessoas?</label>
+              <select id="divisaoPor" onchange="updateDivisaoPor()">
+                <option value="1">1 pessoa</option>
+                <option value="2" selected>2 pessoas</option>
+                <option value="3">3 pessoas</option>
+                <option value="4">4 pessoas</option>
+                <option value="5">5 pessoas</option>
+                <option value="6">6 pessoas</option>
+                <option value="7">7 pessoas</option>
+                <option value="8">8 pessoas</option>
+                <option value="9">9 pessoas</option>
+                <option value="10">10 pessoas</option>
+              </select>
+              <p class="help">
+                O valor líquido (fretes menos gastos) será dividido igualmente
+                entre o número escolhido.
+              </p>
+            </div>
             <div id="finalSummary"></div>
             <div class="actions">
               <button class="btn-primary" id="saveButton" onclick="saveTrip()">
@@ -677,7 +305,7 @@
             <h3>Exportar por período</h3>
             <p class="help">
               Gera um relatório em PDF com todas as viagens, notas, rotas,
-              valores, gastos e divisão.
+              valores, gastos e a divisão escolhida (de 1 a 10 pessoas).
             </p>
             <div class="fields two">
               <div>
@@ -688,6 +316,21 @@
                 <label for="exportEnd">Data final</label>
                 <input type="date" id="exportEnd" />
               </div>
+            </div>
+            <div style="margin-top: 12px">
+              <label for="exportDivisaoPor">Dividir o líquido do relatório entre</label>
+              <select id="exportDivisaoPor">
+                <option value="1">1 pessoa</option>
+                <option value="2" selected>2 pessoas</option>
+                <option value="3">3 pessoas</option>
+                <option value="4">4 pessoas</option>
+                <option value="5">5 pessoas</option>
+                <option value="6">6 pessoas</option>
+                <option value="7">7 pessoas</option>
+                <option value="8">8 pessoas</option>
+                <option value="9">9 pessoas</option>
+                <option value="10">10 pessoas</option>
+              </select>
             </div>
             <div class="actions">
               <button class="btn-primary" onclick="exportPdfByPeriod()">
@@ -707,1168 +350,199 @@
               <strong id="monthlyLiquid">R$ 0,00</strong>
             </div>
             <div class="summary-box highlight">
-              <span>Parte de cada</span>
+              <span>Soma das partes</span>
               <strong id="monthlyPart">R$ 0,00</strong>
             </div>
           </div>
           <div class="trip-list" id="tripList"></div>
         </aside>
+          </div>
+        </div>
+
+        <div id="tabPanelContabilidade" class="tab-panel hidden">
+          <div class="grid">
+            <section class="card">
+              <div class="steps">
+                <div class="step active" id="accStep1">1. Viagem</div>
+                <div class="step" id="accStep2">2. Mercadoria</div>
+              </div>
+
+              <div id="accScreenTrip">
+                <h2>Dados da viagem</h2>
+                <div class="fields three">
+                  <div>
+                    <label for="accData">Data</label>
+                    <input type="date" id="accData" />
+                  </div>
+                  <div>
+                    <label for="accLocalPartida">Local de partida</label>
+                    <input
+                      type="text"
+                      id="accLocalPartida"
+                      placeholder="Ex: Uberaba"
+                    />
+                  </div>
+                  <div>
+                    <label for="accLocalDestino">Local de destino</label>
+                    <input
+                      type="text"
+                      id="accLocalDestino"
+                      placeholder="Ex: Patos de Minas"
+                    />
+                  </div>
+                </div>
+                <div class="actions">
+                  <button class="btn-primary" onclick="accountingGoNext()">
+                    Próximo
+                  </button>
+                  <button class="btn-secondary" onclick="resetAccountingForm()">
+                    Limpar
+                  </button>
+                </div>
+                <div class="alert hidden" id="accTripAlert"></div>
+              </div>
+
+              <div id="accScreenMerch" class="hidden">
+                <h2>Dados da mercadoria</h2>
+                <p class="help" id="accTripSummary"></p>
+                <div class="fields two">
+                  <div>
+                    <label for="accCidadeDestinoMercadoria"
+                      >Cidade destino da mercadoria</label
+                    >
+                    <input
+                      type="text"
+                      id="accCidadeDestinoMercadoria"
+                      placeholder="Ex: Araxá"
+                    />
+                  </div>
+                  <div>
+                    <label for="accRemetente">Remetente</label>
+                    <input
+                      type="text"
+                      id="accRemetente"
+                      placeholder="Ex: Empresa A"
+                    />
+                  </div>
+                  <div>
+                    <label for="accDestinatario">Destinatário</label>
+                    <input
+                      type="text"
+                      id="accDestinatario"
+                      placeholder="Ex: Empresa B"
+                    />
+                  </div>
+                  <div>
+                    <label for="accNotaFiscal">Nota fiscal</label>
+                    <input
+                      type="text"
+                      id="accNotaFiscal"
+                      placeholder="Ex: 12345"
+                    />
+                  </div>
+                  <div>
+                    <label for="accValorFrete">Valor do frete</label>
+                    <input
+                      type="number"
+                      id="accValorFrete"
+                      placeholder="0,00"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                </div>
+
+                <div class="freight-doc-box">
+                  <label>Documento de frete (foto)</label>
+                  <p class="help">
+                    Arraste uma imagem, escolha um arquivo ou use a câmera do
+                    celular.
+                  </p>
+                  <div
+                    class="freight-doc-dropzone"
+                    id="accFreightDropzone"
+                    role="button"
+                    tabindex="0"
+                    aria-label="Área para anexar documento de frete"
+                  >
+                    <div class="freight-doc-empty" id="accFreightEmpty">
+                      <span>Arraste a foto aqui</span>
+                      <span class="freight-doc-hint">ou use os botões abaixo</span>
+                    </div>
+                    <img
+                      class="freight-doc-preview hidden"
+                      id="accFreightPreview"
+                      alt="Prévia do documento de frete"
+                    />
+                  </div>
+                  <div class="actions freight-doc-actions">
+                    <button
+                      type="button"
+                      class="btn-secondary"
+                      onclick="openAccFreightFilePicker()"
+                    >
+                      Escolher arquivo
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-secondary"
+                      onclick="openAccFreightCamera()"
+                    >
+                      Tirar foto
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-danger hidden"
+                      id="accFreightRemoveBtn"
+                      onclick="clearAccFreightDocument()"
+                    >
+                      Remover foto
+                    </button>
+                  </div>
+                  <input
+                    type="file"
+                    id="accFreightFileInput"
+                    class="hidden"
+                    accept="image/*"
+                  />
+                  <input
+                    type="file"
+                    id="accFreightCameraInput"
+                    class="hidden"
+                    accept="image/*"
+                    capture="environment"
+                  />
+                </div>
+
+                <div class="actions">
+                  <button class="btn-primary" onclick="saveAccountingEntry()">
+                    Salvar lançamento
+                  </button>
+                  <button class="btn-secondary" onclick="accountingGoBack()">
+                    Voltar
+                  </button>
+                  <button class="btn-secondary" onclick="resetAccountingForm()">
+                    Novo lançamento
+                  </button>
+                </div>
+                <div class="alert hidden" id="accMerchAlert"></div>
+                <div class="success hidden" id="accMerchSuccess"></div>
+              </div>
+            </section>
+
+            <aside class="card">
+              <h2>Lançamentos salvos</h2>
+              <div class="trip-list" id="accountingList"></div>
+            </aside>
+          </div>
+        </div>
       </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-      const SUPABASE_URL = "https://isysdxcppvajnjlzfpsh.supabase.co";
-      const SUPABASE_KEY = "sb_publishable_L4XrcmXphpCRZaeTA-Kkdw_5vEGvV_7";
-      const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-      let currentUser = null;
-      let savedTrips = [];
-      let isPasswordRecovery = false;
-
-      let currentTrip = {
-        id: null,
-        data: "",
-        cidadeSaida: "",
-        cidadeDestinoFinal: "",
-        notas: [],
-        combustivel: 0,
-        pedagio: 0,
-      };
-
-      const money = new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
-
-      function parseMoneyValue(value) {
-        const number = Number(value);
-        return Number.isFinite(number) ? number : 0;
-      }
-
-      function formatMoney(value) {
-        return money.format(value || 0);
-      }
-
-      function today() {
-        const d = new Date();
-        const month = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        return `${d.getFullYear()}-${month}-${day}`;
-      }
-
-      function formatDateBR(dateString) {
-        if (!dateString) return "";
-        const parts = dateString.split("-");
-        if (parts.length !== 3) return dateString;
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-      }
-
-      function normalizeTrip(trip) {
-        return {
-          ...trip,
-          cidadeDestinoFinal:
-            trip.cidadeDestinoFinal || trip.cidadeDestino || "",
-          notas: (trip.notas || []).map((note) => ({
-            ...note,
-            rota:
-              note.rota ||
-              note.cidadeDestino ||
-              trip.cidadeDestinoFinal ||
-              trip.cidadeDestino ||
-              "Sem rota",
-          })),
-        };
-      }
-
-      function dbTripToAppTrip(dbTrip) {
-        return normalizeTrip({
-          id: dbTrip.id,
-          data: dbTrip.data_viagem,
-          cidadeSaida: dbTrip.cidade_saida,
-          cidadeDestinoFinal: dbTrip.destino_final,
-          combustivel: Number(dbTrip.combustivel || 0),
-          pedagio: Number(dbTrip.pedagio || 0),
-          notas: (dbTrip.notas_fiscais || []).map((note) => ({
-            id: note.id,
-            rota: note.rota,
-            remetente: note.remetente,
-            numeroNf: note.numero_nf,
-            valorNf: Number(note.valor_nf || 0),
-            valorFrete: Number(note.valor_frete || 0),
-          })),
-        });
-      }
-
-      function setStep(active) {
-        for (let i = 1; i <= 4; i++) {
-          document.getElementById(`step${i}`).classList.remove("active");
-        }
-        document.getElementById(`step${active}`).classList.add("active");
-      }
-
-      function showScreen(screenId, step) {
-        [
-          "screenTrip",
-          "screenNotes",
-          "screenExpenses",
-          "screenSummary",
-        ].forEach((id) => {
-          document.getElementById(id).classList.add("hidden");
-        });
-        document.getElementById(screenId).classList.remove("hidden");
-        setStep(step);
-      }
-
-      function showAlert(id, message) {
-        const el = document.getElementById(id);
-        el.textContent = message;
-        el.classList.remove("hidden");
-      }
-
-      function hideAlert(id) {
-        const el = document.getElementById(id);
-        el.textContent = "";
-        el.classList.add("hidden");
-      }
-
-      function showSuccess(id, message) {
-        const el = document.getElementById(id);
-        el.textContent = message;
-        el.classList.remove("hidden");
-      }
-
-      function hideSuccess(id) {
-        const el = document.getElementById(id);
-        el.textContent = "";
-        el.classList.add("hidden");
-      }
-
-      async function checkAuth() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const isResetPasswordUrl =
-          urlParams.has("reset-password") ||
-          window.location.hash.includes("type=recovery");
-
-        const { data, error } = await supabaseClient.auth.getSession();
-        if (error) {
-          console.error(error);
-        }
-
-        currentUser = data.session?.user || null;
-
-        if (isResetPasswordUrl) {
-          isPasswordRecovery = true;
-        }
-
-        updateAuthUi();
-
-        supabaseClient.auth.onAuthStateChange(async (event, session) => {
-          if (event === "PASSWORD_RECOVERY") {
-            isPasswordRecovery = true;
-            currentUser = session?.user || null;
-            updateAuthUi();
-            return;
-          }
-
-          currentUser = session?.user || null;
-          updateAuthUi();
-          if (currentUser) {
-            await loadTripsFromSupabase();
-          }
-        });
-      }
-
-      function updateAuthUi() {
-        const authScreen = document.getElementById("authScreen");
-        const recoveryScreen = document.getElementById(
-          "passwordRecoveryScreen",
-        );
-        const appMain = document.getElementById("appMain");
-        const userBar = document.getElementById("userBar");
-        const userEmail = document.getElementById("userEmail");
-
-        if (isPasswordRecovery) {
-          authScreen.classList.add("hidden");
-          recoveryScreen.classList.remove("hidden");
-          appMain.classList.add("hidden");
-          userBar.classList.add("hidden");
-          return;
-        }
-
-        recoveryScreen.classList.add("hidden");
-
-        if (currentUser) {
-          authScreen.classList.add("hidden");
-          appMain.classList.remove("hidden");
-          userBar.classList.remove("hidden");
-          userEmail.textContent = currentUser.email || "Usuário logado";
-        } else {
-          authScreen.classList.remove("hidden");
-          appMain.classList.add("hidden");
-          userBar.classList.add("hidden");
-          userEmail.textContent = "";
-          savedTrips = [];
-        }
-      }
-
-      function getAuthCredentials() {
-        const email = document.getElementById("authEmail").value.trim();
-        const password = document.getElementById("authPassword").value;
-
-        if (!email || !password) {
-          showAlert("authAlert", "Informe e-mail e senha.");
-          return null;
-        }
-
-        if (password.length < 6) {
-          showAlert(
-            "authAlert",
-            "A senha precisa ter pelo menos 6 caracteres.",
-          );
-          return null;
-        }
-
-        hideAlert("authAlert");
-        hideSuccess("authSuccess");
-        return { email, password };
-      }
-
-      async function loginUser() {
-        const credentials = getAuthCredentials();
-        if (!credentials) return;
-
-        const { error } =
-          await supabaseClient.auth.signInWithPassword(credentials);
-
-        if (error) {
-          showAlert("authAlert", "Erro ao entrar. Confira e-mail e senha.");
-          console.error(error);
-          return;
-        }
-
-        hideAlert("authAlert");
-        showSuccess("authSuccess", "Login realizado com sucesso.");
-      }
-
-      async function forgotPassword() {
-        hideAlert("authAlert");
-        hideSuccess("authSuccess");
-
-        const email = document.getElementById("authEmail").value.trim();
-
-        if (!email) {
-          showAlert(
-            "authAlert",
-            "Digite o e-mail cadastrado para recuperar a senha.",
-          );
-          return;
-        }
-
-        const { data: exists, error: existsError } = await supabaseClient.rpc(
-          "email_usuario_existe",
-          { email_input: email },
-        );
-
-        if (existsError) {
-          console.error(existsError);
-          showAlert(
-            "authAlert",
-            "Erro ao verificar o e-mail. Rode a função SQL de recuperação no Supabase.",
-          );
-          return;
-        }
-
-        if (!exists) {
-          showAlert("authAlert", "Este e-mail não está cadastrado no sistema.");
-          return;
-        }
-
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(
-          email,
-          {
-            redirectTo:
-              window.location.origin +
-              window.location.pathname +
-              "?reset-password=true",
-          },
-        );
-
-        if (error) {
-          console.error(error);
-          showAlert(
-            "authAlert",
-            `Erro ao enviar o link: ${error.message || "verifique as configurações de autenticação no Supabase."}`,
-          );
-          return;
-        }
-
-        showSuccess(
-          "authSuccess",
-          "Link de redefinição enviado para o e-mail cadastrado.",
-        );
-      }
-
-      async function updateRecoveredPassword() {
-        hideAlert("recoveryAlert");
-        hideSuccess("recoverySuccess");
-
-        const newPassword = document.getElementById("newPassword").value;
-        const confirmNewPassword =
-          document.getElementById("confirmNewPassword").value;
-
-        const { data: sessionData } = await supabaseClient.auth.getSession();
-
-        if (!sessionData.session) {
-          showAlert(
-            "recoveryAlert",
-            "Sessão de recuperação não encontrada. Abra novamente o link recebido por e-mail.",
-          );
-          return;
-        }
-
-        if (!newPassword || !confirmNewPassword) {
-          showAlert("recoveryAlert", "Preencha e confirme a nova senha.");
-          return;
-        }
-
-        if (newPassword.length < 6) {
-          showAlert(
-            "recoveryAlert",
-            "A nova senha precisa ter pelo menos 6 caracteres.",
-          );
-          return;
-        }
-
-        if (newPassword !== confirmNewPassword) {
-          showAlert("recoveryAlert", "As senhas não conferem.");
-          return;
-        }
-
-        const { error } = await supabaseClient.auth.updateUser({
-          password: newPassword,
-        });
-
-        if (error) {
-          console.error(error);
-          showAlert(
-            "recoveryAlert",
-            "Erro ao atualizar a senha. Abra novamente o link enviado por e-mail.",
-          );
-          return;
-        }
-
-        showSuccess("recoverySuccess", "Senha alterada com sucesso.");
-        isPasswordRecovery = false;
-        document.getElementById("newPassword").value = "";
-        document.getElementById("confirmNewPassword").value = "";
-        window.history.replaceState(
-          {},
-          document.title,
-          window.location.origin + window.location.pathname,
-        );
-        await supabaseClient.auth.signOut();
-        isPasswordRecovery = false;
-        currentUser = null;
-        updateAuthUi();
-        showSuccess(
-          "authSuccess",
-          "Senha alterada. Entre novamente com a nova senha.",
-        );
-      }
-
-      async function logoutUser() {
-        await supabaseClient.auth.signOut();
-        currentUser = null;
-        savedTrips = [];
-        resetForm();
-        updateAuthUi();
-      }
-
-      function goToNotes() {
-        const data = document.getElementById("dataViagem").value;
-        const cidadeSaida = document.getElementById("cidadeSaida").value.trim();
-        const cidadeDestinoFinal = document
-          .getElementById("cidadeDestinoFinal")
-          .value.trim();
-
-        if (!data || !cidadeSaida || !cidadeDestinoFinal) {
-          showAlert(
-            "tripAlert",
-            "Preencha data, cidade de saída e destino final.",
-          );
-          return;
-        }
-
-        hideAlert("tripAlert");
-        currentTrip.data = data;
-        currentTrip.cidadeSaida = cidadeSaida;
-        currentTrip.cidadeDestinoFinal = cidadeDestinoFinal;
-        showScreen("screenNotes", 2);
-        renderNotes();
-      }
-
-      function backToTrip() {
-        showScreen("screenTrip", 1);
-      }
-
-      function addNote() {
-        const rota = document.getElementById("rotaNota").value.trim();
-        const remetente = document.getElementById("remetente").value.trim();
-        const numeroNf = document.getElementById("numeroNf").value.trim();
-        const valorNf = parseMoneyValue(
-          document.getElementById("valorNf").value,
-        );
-        const valorFrete = parseMoneyValue(
-          document.getElementById("valorFrete").value,
-        );
-
-        if (
-          !rota ||
-          !remetente ||
-          !numeroNf ||
-          valorNf <= 0 ||
-          valorFrete <= 0
-        ) {
-          showAlert(
-            "noteAlert",
-            "Preencha rota, remetente, número da NF, valor da NF e valor do frete.",
-          );
-          return;
-        }
-
-        hideAlert("noteAlert");
-
-        currentTrip.notas.push({
-          id: crypto.randomUUID ? crypto.randomUUID() : Date.now(),
-          rota,
-          remetente,
-          numeroNf,
-          valorNf,
-          valorFrete,
-        });
-
-        document.getElementById("rotaNota").value = "";
-        document.getElementById("remetente").value = "";
-        document.getElementById("numeroNf").value = "";
-        document.getElementById("valorNf").value = "";
-        document.getElementById("valorFrete").value = "";
-        document.getElementById("rotaNota").focus();
-
-        renderNotes();
-      }
-
-      function removeNote(id) {
-        currentTrip.notas = currentTrip.notas.filter(
-          (note) => String(note.id) !== String(id),
-        );
-        renderNotes();
-      }
-
-      function getTotals(tripInput = currentTrip) {
-        const trip = normalizeTrip(tripInput);
-        const totalNfs = trip.notas.reduce(
-          (sum, note) => sum + Number(note.valorNf || 0),
-          0,
-        );
-        const totalFretes = trip.notas.reduce(
-          (sum, note) => sum + Number(note.valorFrete || 0),
-          0,
-        );
-        const combustivel = Number(trip.combustivel || 0);
-        const pedagio = Number(trip.pedagio || 0);
-        const totalGastos = combustivel + pedagio;
-        const valorLiquido = totalFretes - totalGastos;
-        const parteCada = valorLiquido / 2;
-
-        return {
-          totalNfs,
-          totalFretes,
-          combustivel,
-          pedagio,
-          totalGastos,
-          valorLiquido,
-          parteCada,
-        };
-      }
-
-      function getRouteTotals(tripInput = currentTrip) {
-        const trip = normalizeTrip(tripInput);
-        const grouped = {};
-
-        trip.notas.forEach((note) => {
-          const rota = note.rota || "Sem rota";
-          if (!grouped[rota]) {
-            grouped[rota] = {
-              rota,
-              quantidadeNotas: 0,
-              totalNfs: 0,
-              totalFretes: 0,
-            };
-          }
-
-          grouped[rota].quantidadeNotas += 1;
-          grouped[rota].totalNfs += Number(note.valorNf || 0);
-          grouped[rota].totalFretes += Number(note.valorFrete || 0);
-        });
-
-        return Object.values(grouped).sort((a, b) =>
-          a.rota.localeCompare(b.rota),
-        );
-      }
-
-      function renderRouteTotals(targetId, trip = currentTrip) {
-        const target = document.getElementById(targetId);
-        const routes = getRouteTotals(trip);
-
-        if (routes.length === 0) {
-          target.innerHTML =
-            '<div class="empty">Nenhuma rota lançada ainda.</div>';
-          return;
-        }
-
-        target.innerHTML = routes
-          .map(
-            (route) => `
-        <div class="route-item">
-          <div class="route-title">${route.rota}</div>
-          <div class="route-details">
-            Notas: ${route.quantidadeNotas}<br>
-            Total das NFs: ${formatMoney(route.totalNfs)}<br>
-            Total dos fretes desta rota: <strong>${formatMoney(route.totalFretes)}</strong>
-          </div>
-        </div>
-      `,
-          )
-          .join("");
-      }
-
-      function renderRouteTable(trip = currentTrip) {
-        const routes = getRouteTotals(trip);
-
-        if (routes.length === 0) {
-          return '<div class="empty">Nenhuma rota lançada.</div>';
-        }
-
-        const rows = routes
-          .map(
-            (route) => `
-        <tr>
-          <td>${route.rota}</td>
-          <td>${route.quantidadeNotas}</td>
-          <td>${formatMoney(route.totalNfs)}</td>
-          <td><strong>${formatMoney(route.totalFretes)}</strong></td>
-        </tr>
-      `,
-          )
-          .join("");
-
-        return `
-        <table class="route-table">
-          <thead>
-            <tr>
-              <th>Rota/Cidade</th>
-              <th>Notas</th>
-              <th>Total NFs</th>
-              <th>Total fretes</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      `;
-      }
-
-      function renderNotes() {
-        const list = document.getElementById("noteList");
-        const totals = getTotals();
-
-        document.getElementById("totalNfs").textContent = formatMoney(
-          totals.totalNfs,
-        );
-        document.getElementById("totalFretes").textContent = formatMoney(
-          totals.totalFretes,
-        );
-        renderRouteTotals("routeTotalsNotes");
-
-        if (currentTrip.notas.length === 0) {
-          list.innerHTML =
-            '<div class="empty">Nenhuma nota adicionada ainda.</div>';
-          return;
-        }
-
-        list.innerHTML = currentTrip.notas
-          .map(
-            (note) => `
-        <div class="note-item">
-          <div class="note-item-top">
-            <div>
-              <div class="note-title">${note.rota} | NF ${note.numeroNf} - ${note.remetente}</div>
-              <div class="note-details">
-                Valor da NF: ${formatMoney(note.valorNf)}<br>
-                Frete da NF: ${formatMoney(note.valorFrete)}
-              </div>
-            </div>
-            <button class="btn-danger" onclick="removeNote('${note.id}')">Remover</button>
-          </div>
-        </div>
-      `,
-          )
-          .join("");
-      }
-
-      function finishNotes() {
-        if (currentTrip.notas.length === 0) {
-          showAlert(
-            "noteAlert",
-            "Adicione pelo menos uma nota fiscal antes de continuar.",
-          );
-          return;
-        }
-
-        hideAlert("noteAlert");
-        showScreen("screenExpenses", 3);
-      }
-
-      function backToNotes() {
-        showScreen("screenNotes", 2);
-        renderNotes();
-      }
-
-      function goToSummary() {
-        currentTrip.combustivel = parseMoneyValue(
-          document.getElementById("combustivel").value,
-        );
-        currentTrip.pedagio = parseMoneyValue(
-          document.getElementById("pedagio").value,
-        );
-        renderFinalSummary();
-        showScreen("screenSummary", 4);
-      }
-
-      function backToExpenses() {
-        showScreen("screenExpenses", 3);
-      }
-
-      function renderFinalSummary() {
-        const totals = getTotals();
-        const notesRows = normalizeTrip(currentTrip)
-          .notas.map(
-            (note) => `
-        <div class="note-item">
-          <div class="note-title">${note.rota} | ${note.remetente} | NF ${note.numeroNf}</div>
-          <div class="note-details">
-            Valor da NF: ${formatMoney(note.valorNf)} | Frete: ${formatMoney(note.valorFrete)}
-          </div>
-        </div>
-      `,
-          )
-          .join("");
-
-        document.getElementById("finalSummary").innerHTML = `
-        <div class="summary">
-          <div class="summary-box">
-            <span>Viagem</span>
-            <strong style="font-size:15px;">${currentTrip.cidadeSaida} → ${currentTrip.cidadeDestinoFinal}</strong>
-          </div>
-          <div class="summary-box">
-            <span>Total das NFs</span>
-            <strong>${formatMoney(totals.totalNfs)}</strong>
-          </div>
-          <div class="summary-box">
-            <span>Total dos fretes</span>
-            <strong>${formatMoney(totals.totalFretes)}</strong>
-          </div>
-          <div class="summary-box">
-            <span>Total de gastos</span>
-            <strong>${formatMoney(totals.totalGastos)}</strong>
-          </div>
-          <div class="summary-box">
-            <span>Combustível</span>
-            <strong>${formatMoney(totals.combustivel)}</strong>
-          </div>
-          <div class="summary-box">
-            <span>Pedágio</span>
-            <strong>${formatMoney(totals.pedagio)}</strong>
-          </div>
-          <div class="summary-box highlight">
-            <span>Valor líquido geral</span>
-            <strong>${formatMoney(totals.valorLiquido)}</strong>
-          </div>
-          <div class="summary-box highlight">
-            <span>Parte de cada</span>
-            <strong>${formatMoney(totals.parteCada)}</strong>
-          </div>
-        </div>
-
-        <h3>Fretes separados por rota</h3>
-        ${renderRouteTable()}
-
-        <h3>Notas fiscais lançadas</h3>
-        <div class="note-list">${notesRows}</div>
-      `;
-      }
-
-      async function loadTripsFromSupabase() {
-        if (!currentUser) return;
-
-        const list = document.getElementById("tripList");
-        list.innerHTML =
-          '<div class="empty">Carregando viagens do Supabase...</div>';
-
-        const { data, error } = await supabaseClient
-          .from("viagens")
-          .select("*, notas_fiscais(*)")
-          .eq("usuario_id", currentUser.id)
-          .order("data_viagem", { ascending: false })
-          .order("id", { ascending: false });
-
-        if (error) {
-          console.error(error);
-          list.innerHTML =
-            '<div class="empty">Erro ao carregar dados. Confira as tabelas, usuario_id e permissões RLS.</div>';
-          return;
-        }
-
-        savedTrips = (data || []).map(dbTripToAppTrip);
-        renderTrips();
-      }
-
-      async function saveTrip() {
-        hideAlert("saveAlert");
-        hideSuccess("saveSuccess");
-
-        if (!currentUser) {
-          showAlert("saveAlert", "Você precisa estar logado para salvar.");
-          return;
-        }
-
-        const saveButton = document.getElementById("saveButton");
-        saveButton.disabled = true;
-        saveButton.textContent = "Salvando...";
-
-        const totals = getTotals();
-        const rotas = getRouteTotals();
-
-        const { data: viagemCriada, error: erroViagem } = await supabaseClient
-          .from("viagens")
-          .insert({
-            usuario_id: currentUser.id,
-            data_viagem: currentTrip.data,
-            cidade_saida: currentTrip.cidadeSaida,
-            destino_final: currentTrip.cidadeDestinoFinal,
-            combustivel: totals.combustivel,
-            pedagio: totals.pedagio,
-            total_notas: totals.totalNfs,
-            total_fretes: totals.totalFretes,
-            total_gastos: totals.totalGastos,
-            valor_liquido: totals.valorLiquido,
-            parte_cada: totals.parteCada,
-          })
-          .select()
-          .single();
-
-        if (erroViagem) {
-          console.error(erroViagem);
-          showAlert(
-            "saveAlert",
-            "Erro ao salvar a viagem. Confira se a coluna usuario_id e as políticas RLS foram criadas.",
-          );
-          saveButton.disabled = false;
-          saveButton.textContent = "Salvar viagem online";
-          return;
-        }
-
-        const viagemId = viagemCriada.id;
-
-        const notasParaSalvar = currentTrip.notas.map((nota) => ({
-          viagem_id: viagemId,
-          rota: nota.rota,
-          remetente: nota.remetente,
-          numero_nf: nota.numeroNf,
-          valor_nf: nota.valorNf,
-          valor_frete: nota.valorFrete,
-        }));
-
-        const { error: erroNotas } = await supabaseClient
-          .from("notas_fiscais")
-          .insert(notasParaSalvar);
-
-        if (erroNotas) {
-          console.error(erroNotas);
-          showAlert(
-            "saveAlert",
-            "A viagem foi salva, mas houve erro ao salvar as notas fiscais.",
-          );
-          saveButton.disabled = false;
-          saveButton.textContent = "Salvar viagem online";
-          return;
-        }
-
-        const rotasParaSalvar = rotas.map((rota) => ({
-          viagem_id: viagemId,
-          rota: rota.rota,
-          quantidade_notas: rota.quantidadeNotas,
-          total_notas: rota.totalNfs,
-          total_fretes: rota.totalFretes,
-        }));
-
-        const { error: erroRotas } = await supabaseClient
-          .from("rotas_resumo")
-          .insert(rotasParaSalvar);
-
-        if (erroRotas) {
-          console.error(erroRotas);
-          showAlert(
-            "saveAlert",
-            "A viagem e as notas foram salvas, mas houve erro ao salvar o resumo das rotas.",
-          );
-          saveButton.disabled = false;
-          saveButton.textContent = "Salvar viagem online";
-          return;
-        }
-
-        showSuccess("saveSuccess", "Viagem salva online com sucesso.");
-        saveButton.disabled = false;
-        saveButton.textContent = "Salvar viagem online";
-
-        await loadTripsFromSupabase();
-        resetForm();
-      }
-
-      async function deleteTrip(id) {
-        if (!currentUser) return;
-
-        const confirmDelete = confirm(
-          "Deseja remover esta viagem salva? As notas e rotas também serão removidas.",
-        );
-        if (!confirmDelete) return;
-
-        const { error } = await supabaseClient
-          .from("viagens")
-          .delete()
-          .eq("id", id)
-          .eq("usuario_id", currentUser.id);
-
-        if (error) {
-          console.error(error);
-          alert("Erro ao excluir a viagem no Supabase.");
-          return;
-        }
-
-        await loadTripsFromSupabase();
-      }
-
-      function viewTrip(id) {
-        const trip = savedTrips.find((item) => Number(item.id) === Number(id));
-        if (!trip) return;
-
-        currentTrip = JSON.parse(JSON.stringify(normalizeTrip(trip)));
-        document.getElementById("dataViagem").value = currentTrip.data;
-        document.getElementById("cidadeSaida").value = currentTrip.cidadeSaida;
-        document.getElementById("cidadeDestinoFinal").value =
-          currentTrip.cidadeDestinoFinal;
-        document.getElementById("combustivel").value = currentTrip.combustivel;
-        document.getElementById("pedagio").value = currentTrip.pedagio;
-        renderFinalSummary();
-        showScreen("screenSummary", 4);
-      }
-
-      function renderTrips() {
-        const trips = savedTrips;
-        const list = document.getElementById("tripList");
-
-        const totalLiquido = trips.reduce(
-          (sum, trip) => sum + getTotals(trip).valorLiquido,
-          0,
-        );
-        const parteCada = totalLiquido / 2;
-
-        document.getElementById("monthlyLiquid").textContent =
-          formatMoney(totalLiquido);
-        document.getElementById("monthlyPart").textContent =
-          formatMoney(parteCada);
-
-        if (trips.length === 0) {
-          list.innerHTML =
-            '<div class="empty">Nenhuma viagem salva ainda.</div>';
-          return;
-        }
-
-        list.innerHTML = trips
-          .map((trip) => {
-            const totals = getTotals(trip);
-            const routes = getRouteTotals(trip)
-              .map((route) => route.rota)
-              .join(", ");
-            return `
-          <div class="trip-item">
-            <div class="trip-head">
-              <div>
-                <div class="trip-route">${trip.cidadeSaida} → ${trip.cidadeDestinoFinal}</div>
-                <div class="trip-date">${formatDateBR(trip.data)}</div>
-                <div class="trip-date">Rotas: ${routes || "Sem rotas"}</div>
-              </div>
-              <div class="actions" style="margin-top:0;">
-                <button class="btn-secondary" onclick="viewTrip(${trip.id})">Ver</button>
-                <button class="btn-danger" onclick="deleteTrip(${trip.id})">Excluir</button>
-              </div>
-            </div>
-            <div class="trip-values">
-              <div>Total fretes:<br><strong>${formatMoney(totals.totalFretes)}</strong></div>
-              <div>Gastos juntos:<br><strong>${formatMoney(totals.totalGastos)}</strong></div>
-              <div>Líquido geral:<br><strong>${formatMoney(totals.valorLiquido)}</strong></div>
-              <div>Parte de cada:<br><strong>${formatMoney(totals.parteCada)}</strong></div>
-            </div>
-          </div>
-        `;
-          })
-          .join("");
-      }
-
-      function getTripsByPeriod(startDate, endDate) {
-        return savedTrips.filter((trip) => {
-          if (!trip.data) return false;
-          return trip.data >= startDate && trip.data <= endDate;
-        });
-      }
-
-      async function exportPdfByPeriod() {
-        hideAlert("exportAlert");
-        hideSuccess("exportSuccess");
-
-        await loadTripsFromSupabase();
-
-        const startDate = document.getElementById("exportStart").value;
-        const endDate = document.getElementById("exportEnd").value;
-
-        if (!startDate || !endDate) {
-          showAlert(
-            "exportAlert",
-            "Informe a data inicial e a data final para gerar o PDF.",
-          );
-          return;
-        }
-
-        if (startDate > endDate) {
-          showAlert(
-            "exportAlert",
-            "A data inicial não pode ser maior que a data final.",
-          );
-          return;
-        }
-
-        const trips = getTripsByPeriod(startDate, endDate);
-
-        if (trips.length === 0) {
-          showAlert("exportAlert", "Nenhuma viagem encontrada nesse período.");
-          return;
-        }
-
-        const grandTotals = trips.reduce(
-          (acc, tripInput) => {
-            const totals = getTotals(tripInput);
-            acc.totalNfs += totals.totalNfs;
-            acc.totalFretes += totals.totalFretes;
-            acc.combustivel += totals.combustivel;
-            acc.pedagio += totals.pedagio;
-            acc.totalGastos += totals.totalGastos;
-            acc.valorLiquido += totals.valorLiquido;
-            acc.parteCada = acc.valorLiquido / 2;
-            return acc;
-          },
-          {
-            totalNfs: 0,
-            totalFretes: 0,
-            combustivel: 0,
-            pedagio: 0,
-            totalGastos: 0,
-            valorLiquido: 0,
-            parteCada: 0,
-          },
-        );
-
-        const tripsHtml = trips
-          .map((tripInput, index) => {
-            const trip = normalizeTrip(tripInput);
-            const totals = getTotals(trip);
-            const routeRows = getRouteTotals(trip)
-              .map(
-                (route) => `
-          <tr>
-            <td>${route.rota}</td>
-            <td>${route.quantidadeNotas}</td>
-            <td>${formatMoney(route.totalNfs)}</td>
-            <td>${formatMoney(route.totalFretes)}</td>
-          </tr>
-        `,
-              )
-              .join("");
-
-            const noteRows = trip.notas
-              .map(
-                (note) => `
-          <tr>
-            <td>${note.rota}</td>
-            <td>${note.remetente}</td>
-            <td>${note.numeroNf}</td>
-            <td>${formatMoney(note.valorNf)}</td>
-            <td>${formatMoney(note.valorFrete)}</td>
-          </tr>
-        `,
-              )
-              .join("");
-
-            return `
-          <section class="trip-section">
-            <h2>${index + 1}. ${trip.cidadeSaida} → ${trip.cidadeDestinoFinal}</h2>
-            <p class="muted">Data: ${formatDateBR(trip.data)}</p>
-            <div class="summary-grid">
-              <div><span>Total NFs</span><strong>${formatMoney(totals.totalNfs)}</strong></div>
-              <div><span>Total fretes</span><strong>${formatMoney(totals.totalFretes)}</strong></div>
-              <div><span>Combustível</span><strong>${formatMoney(totals.combustivel)}</strong></div>
-              <div><span>Pedágio</span><strong>${formatMoney(totals.pedagio)}</strong></div>
-              <div><span>Total gastos</span><strong>${formatMoney(totals.totalGastos)}</strong></div>
-              <div><span>Líquido</span><strong>${formatMoney(totals.valorLiquido)}</strong></div>
-              <div><span>Parte de cada</span><strong>${formatMoney(totals.parteCada)}</strong></div>
-            </div>
-            <h3>Fretes separados por rota</h3>
-            <table>
-              <thead>
-                <tr><th>Rota/Cidade</th><th>Notas</th><th>Total NFs</th><th>Total fretes</th></tr>
-              </thead>
-              <tbody>${routeRows}</tbody>
-            </table>
-            <h3>Notas fiscais</h3>
-            <table>
-              <thead>
-                <tr><th>Rota</th><th>Remetente</th><th>NF</th><th>Valor NF</th><th>Frete</th></tr>
-              </thead>
-              <tbody>${noteRows}</tbody>
-            </table>
-          </section>
-        `;
-          })
-          .join("");
-
-        const reportHtml = `
-        <!DOCTYPE html>
-        <html lang="pt-BR">
-        <head>
-          <meta charset="UTF-8" />
-          <title>Relatório de Fretes</title>
-          <style>
-            * { box-sizing: border-box; }
-            body { font-family: Arial, Helvetica, sans-serif; color: #111827; margin: 24px; background: #ffffff; }
-            .header { border-bottom: 3px solid #1f4f46; padding-bottom: 14px; margin-bottom: 18px; }
-            h1 { margin: 0; color: #1f4f46; font-size: 24px; }
-            h2 { color: #1f4f46; font-size: 18px; margin: 24px 0 4px; }
-            h3 { color: #374151; font-size: 14px; margin: 18px 0 8px; }
-            .muted { color: #6b7280; font-size: 12px; margin: 4px 0 12px; }
-            .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
-            .summary-grid div { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; background: #f9fafb; }
-            .summary-grid span { display: block; color: #6b7280; font-size: 11px; margin-bottom: 4px; }
-            .summary-grid strong { font-size: 14px; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px; }
-            th, td { border: 1px solid #d1d5db; padding: 7px; text-align: left; }
-            th { background: #eef2f7; color: #374151; }
-            .trip-section { page-break-inside: avoid; margin-bottom: 22px; }
-            .total-box { border: 2px solid #1f4f46; border-radius: 10px; padding: 12px; margin: 16px 0 22px; background: #f9fafb; }
-            .footer { color: #6b7280; font-size: 11px; margin-top: 24px; border-top: 1px solid #d1d5db; padding-top: 10px; }
-            @media print { body { margin: 12mm; } button { display: none; } .trip-section { page-break-inside: avoid; } }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h1>Relatório de Fretes</h1>
-            <p class="muted">Período: ${formatDateBR(startDate)} até ${formatDateBR(endDate)}</p>
-            <p class="muted">Gerado em: ${formatDateBR(today())}</p>
-          </div>
-          <div class="total-box">
-            <h2 style="margin-top:0;">Resumo geral do período</h2>
-            <div class="summary-grid">
-              <div><span>Viagens</span><strong>${trips.length}</strong></div>
-              <div><span>Total NFs</span><strong>${formatMoney(grandTotals.totalNfs)}</strong></div>
-              <div><span>Total fretes</span><strong>${formatMoney(grandTotals.totalFretes)}</strong></div>
-              <div><span>Combustível</span><strong>${formatMoney(grandTotals.combustivel)}</strong></div>
-              <div><span>Pedágio</span><strong>${formatMoney(grandTotals.pedagio)}</strong></div>
-              <div><span>Total gastos</span><strong>${formatMoney(grandTotals.totalGastos)}</strong></div>
-              <div><span>Líquido geral</span><strong>${formatMoney(grandTotals.valorLiquido)}</strong></div>
-              <div><span>Parte de cada</span><strong>${formatMoney(grandTotals.parteCada)}</strong></div>
-            </div>
-          </div>
-          ${tripsHtml}
-          <div class="footer">Relatório gerado pelo sistema de controle de fretes.</div>
-          <script>window.onload = function() { window.print(); };<\/script>
-        </body>
-        </html>
-      `;
-
-        const printWindow = window.open("", "_blank");
-
-        if (!printWindow) {
-          showAlert(
-            "exportAlert",
-            "O navegador bloqueou a abertura do relatório. Libere pop-ups para gerar o PDF.",
-          );
-          return;
-        }
-
-        printWindow.document.open();
-        printWindow.document.write(reportHtml);
-        printWindow.document.close();
-
-        showSuccess(
-          "exportSuccess",
-          `Relatório aberto: ${trips.length} viagem(ns) encontrada(s). Na janela de impressão, escolha "Salvar como PDF".`,
-        );
-      }
-
-      function clearExportDates() {
-        document.getElementById("exportStart").value = "";
-        document.getElementById("exportEnd").value = "";
-        hideAlert("exportAlert");
-        hideSuccess("exportSuccess");
-      }
-
-      function resetForm() {
-        currentTrip = {
-          id: null,
-          data: today(),
-          cidadeSaida: "",
-          cidadeDestinoFinal: "",
-          notas: [],
-          combustivel: 0,
-          pedagio: 0,
-        };
-
-        document.getElementById("dataViagem").value = today();
-        document.getElementById("cidadeSaida").value = "";
-        document.getElementById("cidadeDestinoFinal").value = "";
-        document.getElementById("rotaNota").value = "";
-        document.getElementById("remetente").value = "";
-        document.getElementById("numeroNf").value = "";
-        document.getElementById("valorNf").value = "";
-        document.getElementById("valorFrete").value = "";
-        document.getElementById("combustivel").value = "";
-        document.getElementById("pedagio").value = "";
-
-        hideAlert("tripAlert");
-        hideAlert("noteAlert");
-        hideAlert("saveAlert");
-        hideSuccess("saveSuccess");
-        renderNotes();
-        showScreen("screenTrip", 1);
-      }
-
-      document.addEventListener("DOMContentLoaded", async () => {
-        document.getElementById("dataViagem").value = today();
-        currentTrip.data = today();
-        renderNotes();
-        await checkAuth();
-        if (currentUser) {
-          await loadTripsFromSupabase();
-        }
-      });
-    </script>
+    <script src="js/shared.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/contabilidade.js"></script>
+    <script src="js/app.js"></script>
   </body>
 </html>
